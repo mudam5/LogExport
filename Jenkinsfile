@@ -19,11 +19,13 @@ pipeline {
             }
         }
         stage('Build') {
-      steps {
-        // build the project and create a JAR file
-        sh 'mvn clean package -DskipTests'
-      }
+    steps {
+        dir('LogExport') {
+            sh 'mvn clean package -DskipTests'
+        }
     }
+}
+
             
 stage('Build & Push Backend') {
             steps {
