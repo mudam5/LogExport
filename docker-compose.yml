@@ -23,7 +23,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "9097:9097"
+      - "9097:8080"
 
 volumes:
   postgres_data:
