@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = "mudam5"
-        IMAGE_NAME = "log-export"
+        IMAGE_NAME = "logexport"
         HOST_PORT = "9097"
         CONTAINER_PORT = "9097"    // match with SERVER_PORT or 8080 if default
-        CONTAINER_NAME = "log-export"
+        CONTAINER_NAME = "logexport"
     }
 
     stages {
