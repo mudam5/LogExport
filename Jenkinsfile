@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main',
+                git branch: 'master',
                     changelog: false,
                     poll: false,
                     url: 'https://github.com/mudam5/Log-Processing.git'
