@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: logdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tiger
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  log-exporter:
+    image: mudam5/log-exporter:latest   # Use image from DockerHub
+    container_name: log-exporter
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: tiger
+    depends_on:
+      - postgres
+    ports:
+      - "9097:9097"
+
+volumes:
+  postgres_data:
