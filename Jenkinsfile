@@ -15,7 +15,7 @@ pipeline {
                 git branch: 'main',
                     changelog: false,
                     poll: false,
-                    url: 'https://github.com/mudam5/Log-Processing.git'
+                    url: 'https://github.com/mudam5/LogExport.git'
             }
         }
 
