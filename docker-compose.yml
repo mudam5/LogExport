@@ -15,7 +15,7 @@ services:
 
   log-exporter:
     image: logexport   # Use image from DockerHub
-    container_name: logexport:latest
+    container_name: logexport
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logdb
       SPRING_DATASOURCE_USERNAME: postgres
