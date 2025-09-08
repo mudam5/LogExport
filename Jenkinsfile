@@ -19,18 +19,12 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
-            steps {
-                script {
-                    def services = ['LogExport']
-                    services.each { svc ->
-                        dir("BACKEND/${svc}") {
-                            sh 'mvn clean package -DskipTests'
-                        }
-                    }
-                }
-            }
-        }
+stage('Build') {
+      steps {
+        // build the project and create a JAR file
+        sh 'mvn clean package -DskipTests'
+      }
+    } 
         stage('Build & Push Docker Image') {
             steps {
                 script {
