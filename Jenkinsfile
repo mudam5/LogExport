@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = "mudam5"
-        IMAGE_NAME = "logexport"
-         HOST_PORT = "9097"
-        CONTAINER_PORT = "9097"
-        CONTAINER_NAME = "logexport"
+        IMAGE_NAME = "log-export"
+        HOST_PORT = "9097"
+        CONTAINER_PORT = "9097"    // match with SERVER_PORT or 8080 if default
+        CONTAINER_NAME = "log-export"
     }
 
     stages {
@@ -15,26 +15,30 @@ pipeline {
                 git branch: 'main',
                     changelog: false,
                     poll: false,
-                    url: 'https://github.com/mudam5/LogExport.git'
+                    url: 'https://github.com/mudam5/Log-Processing.git'
             }
         }
-
-stage('Build') {
+        stage('Build') {
       steps {
         // build the project and create a JAR file
         sh 'mvn clean package -DskipTests'
       }
-    } 
+    }
+            }
+        }
+
         stage('Build & Push Docker Image') {
             steps {
                 script {
                     COMMIT_ID = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     DOCKER_TAG = "${COMMIT_ID}"
 
-                    sh """
-                        docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${DOCKER_TAG} \
-                                     -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
-                    """
+                    dir("BACKEND/LogExport") { // make sure Dockerfile is here
+                        sh """
+                            docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${DOCKER_TAG} \
+                                         -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
+                        """
+                    }
 
                     withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
@@ -43,6 +47,29 @@ stage('Build') {
                     }
                 }
             }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    sh """
+                        echo "Stopping old deployment..."
+                        docker compose -f docker-compose.yml down || true
+
+                        echo "Starting new deployment..."
+                        docker compose -f docker-compose.yml up -d
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment successful! UI is live at http://<EC2-Public-IP>:${HOST_PORT}"
+        }
+        failure {
+            echo "❌ Deployment failed. Check Jenkins logs."
         }
     }
 }
