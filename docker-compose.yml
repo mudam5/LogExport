@@ -14,16 +14,17 @@ services:
       - "5432:5432"
 
   log-exporter:
-    image: logexport   # Use image from DockerHub
+    image: mudam5/log-export:latest   # Replace with your pushed DockerHub image
     container_name: logexport
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: tiger
+      SERVER_PORT: 9097   # Spring Boot will respect this
     depends_on:
       - postgres
     ports:
-      - "9097:8080"
+      - "9097:9097"       # Host:Container
 
 volumes:
   postgres_data:
