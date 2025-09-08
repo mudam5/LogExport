@@ -24,26 +24,14 @@ pipeline {
         sh 'mvn clean package -DskipTests'
       }
     }
-            }
-        }
-
-        stage('Build & Push Docker Image') {
+            
+stage('Build & Push Backend') {
             steps {
                 script {
-                    COMMIT_ID = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    DOCKER_TAG = "${COMMIT_ID}"
-
-                    dir("BACKEND/LogExport") { // make sure Dockerfile is here
-                        sh """
-                            docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${DOCKER_TAG} \
-                                         -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
-                        """
-                    }
-
-                    withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'docker build -t $DOCKER_REGISTRY/log-exporter:latest .'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-id', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${DOCKER_TAG}"
-                        sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                        sh 'docker push $DOCKER_REGISTRY/log-exporter:latest'
                     }
                 }
             }
