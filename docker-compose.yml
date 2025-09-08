@@ -14,8 +14,8 @@ services:
       - "5432:5432"
 
   log-exporter:
-    image: mudam5/log-exporter:latest   # Use image from DockerHub
-    container_name: log-exporter
+    image: logexport   # Use image from DockerHub
+    container_name: logexport:latest
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logdb
       SPRING_DATASOURCE_USERNAME: postgres
